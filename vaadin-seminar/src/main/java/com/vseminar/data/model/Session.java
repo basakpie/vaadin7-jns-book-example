@@ -1,8 +1,14 @@
 package com.vseminar.data.model;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Session {
+	
+	private static final int MAX_ENTRIES = 100; // 최신질문최대사이즈
 	
 	private Long id;             	        
 	private String title;        // 세션명
@@ -13,11 +19,13 @@ public class Session {
 	private Long ownerId;        // 개설자
 	private String speaker;      // 스피커명
 	private String description;  // 세션설명
+	private Set<Long> questions; // 질문
 	
 	public Session() {
 		this.level = LevelType.Junior;
 		this.startDate = new Date();
 		this.endDate = new Date();
+		newMessages();
 	}
 	
 	public Session(Long ownerId) {
@@ -25,6 +33,7 @@ public class Session {
 		this.level = LevelType.Junior;
 		this.startDate = new Date();
 		this.endDate = new Date();
+		newMessages();
 	}
 	
 	public Session(String title, LevelType level, String embeddedUrl, String speaker, Long ownerId, String description) {		
@@ -36,6 +45,17 @@ public class Session {
 		this.startDate = new Date();
 		this.endDate = new Date();
 		this.description = description;
+		newMessages();
+	}
+	
+	@SuppressWarnings("serial")
+	private void newMessages() {
+		// 메인화면에서의 질문 리스트는 전부 보여질 필요가 없으므로 MAX_ENTRIES 정도만 보관
+		this.questions = Collections.newSetFromMap(new LinkedHashMap<Long, Boolean>(MAX_ENTRIES + 1, .90F, false){
+		    protected boolean removeEldestEntry(Map.Entry<Long, Boolean> eldest) {
+		        return size() > MAX_ENTRIES;
+		    }
+		});
 	}
 	
 
@@ -111,11 +131,19 @@ public class Session {
 		this.description = description;
 	}
 
+	public Set<Long> getQuestions() {
+		return questions;
+	}
+
+	public void setQuestions(Set<Long> questions) {
+		this.questions = questions;
+	}
+
 	@Override
 	public String toString() {
 		return "Session [id=" + id + ", title=" + title + ", level=" + level + ", embeddedUrl=" + embeddedUrl
 				+ ", startDate=" + startDate + ", endDate=" + endDate + ", ownerId=" + ownerId + ", speaker=" + speaker
-				+ ", description=" + description + "]";
+				+ ", description=" + description + ", questions=" + questions + "]";
 	}
 	
 }

@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.vseminar.data.model.Question;
 import com.vseminar.data.model.Session;
 import com.vseminar.data.model.User;
 
@@ -101,6 +103,12 @@ public class SessionData implements VSeminarData<Session> {
     		}
     	}
     	return reusts;
+	}
+	
+	public synchronized void addMessage(Question question) {
+		Session session = sessions.get(question.getSessionId());
+		Set<Long> questions = session.getQuestions();
+		questions.add(question.getId());
 	}
 	
 }

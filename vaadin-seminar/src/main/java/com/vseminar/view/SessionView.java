@@ -98,8 +98,8 @@ public class SessionView extends VerticalLayout implements View {
             		}
             		// 그리드에서도 제거
             		grid.getContainerDataSource().removeItem(session); // item 제거
+                	grid.getSelectionModel().reset(); // 그리드 선택 기능 초기화                	
             	}
-            	grid.getSelectionModel().reset(); // 그리드 선택 기능 초기화
             	delBtn.setEnabled(false); // 삭제 버튼 비활성 처리
             }
         });
@@ -140,6 +140,7 @@ public class SessionView extends VerticalLayout implements View {
 		grid.getColumn("embeddedUrl").setHeaderCaption("Presentation").setEditorField(textEditorField()).setMaximumWidth(200);
 		grid.getColumn("description").setHeaderCaption("Description").setEditorField(textEditorField()).setMaximumWidth(200);
 		grid.getColumn("ownerId").setHeaderCaption("Owner").setHidden(true).setEditable(false);
+		grid.getColumn("questions").setHidden(true).setEditable(false);
 		// 수정시 입력값을 검증
 		grid.getColumn("title").getEditorField().addValidator(new StringLengthValidator("The name must be 1-50 letters (was {0})", 1, 50, true));
 		
