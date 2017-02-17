@@ -14,7 +14,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PasswordField;
@@ -29,8 +28,53 @@ import com.vseminar.data.UserSession;
 @SuppressWarnings("serial")
 public class LoginScreen extends VerticalLayout {
 
-	UserSession userSession;    
-    Label errorLabel;
+	final UserSession userSession;
+	final VerticalLayout loginForm = new VerticalLayout();		
+	final VerticalLayout buildLabels = new VerticalLayout();	
+	final HorizontalLayout buildFields = new HorizontalLayout();
+		
+	final Label titleLabel = new Label("welcome to vaadin serminar");
+	final Label errorLabel = new Label();
+		
+	final TextField email = new TextField("Email"); 
+	final PasswordField password = new PasswordField("Password");
+	final Button signin = new Button("Sign In");
+					
+	public VerticalLayout getLoginForm() { 
+		return loginForm; 
+	}
+	
+	public VerticalLayout getBuildLabels() { 
+		return buildLabels; 
+	}
+	
+	public HorizontalLayout getBuildFields() { 
+		return buildFields; 
+	}
+	
+	public Label getTitleLabel() { 
+		return titleLabel; 
+	}
+	
+	public Label getErrorLabel() { 
+		return errorLabel; 
+	}
+	
+	public TextField getEmail() { 
+		return email; 
+	}
+	
+	public PasswordField getPassword() { 
+		return password; 
+	}
+	
+	public Button getSignin() { 
+		return signin; 
+	}
+	
+	public UserSession getUserSession() { 
+		return userSession; 
+	}
 
     @Autowired
     public LoginScreen(UserSession userSession) {
@@ -47,54 +91,56 @@ public class LoginScreen extends VerticalLayout {
 		addStyleName("login-screen");
 	    // 레이아웃사이즈를 화면 전체로 설정 한다.
         setSizeFull();
+        
         // 로그인에 필요한 컴포넌트(s) 구성
-        Component loginForm = buildForm();
+        buildForm();
+        buildLabels();
+        buildFields();
+        
         // 로그인폼 컴포넌트를 Layout에 추가(add)해 준다.
         addComponent(loginForm);
         // 로그인폼 컴포넌트의 정렬 위치를 중앙으로 설정 한다.
         setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 	}
 	
-	private Component buildForm() {
-        final VerticalLayout loginPanel = new VerticalLayout();
-        loginPanel.addStyleName("login-panel"); // 스타일 추가
-        loginPanel.setSizeUndefined(); // setWidth,setHeight(-1, Unit.PIXELS)
-        loginPanel.setSpacing(true);   // Margin or Spacing을 통해 여백처리
-        loginPanel.addComponent(buildLabels());  // 타이틀s(welcome to vaadin seminar)
-        loginPanel.addComponent(buildFields()); // 필드(username, password, sign in)
-        return loginPanel;
+	private void buildForm() {
+        //final VerticalLayout loginPanel = new VerticalLayout();
+		//… loginPanel -> loginForm rename
+		this.loginForm.addStyleName("login-panel"); // 스타일 추가
+		this.loginForm.setSizeUndefined(); // setWidth,setHeight(-1, Unit.PIXELS)
+		this.loginForm.setSpacing(true);   // Margin or Spacing을 통해 여백처리
+		this.loginForm.addComponent(buildLabels);  // 타이틀s(welcome to vaadin seminar)
+		this.loginForm.addComponent(buildFields); // 필드(username, password, sign in)        
     }
 	
-	private Component buildLabels() {
-        Label titleLabel = new Label("welcome to vaadin seminar");// 타이틀 
-        titleLabel.addStyleName(ValoTheme.LABEL_H4);        // 스타일추가
-        titleLabel.addStyleName(ValoTheme.LABEL_COLORED);   // 스타일추가(color bule)
+	private void buildLabels() {		
+		this.titleLabel.setId("title_label"); 
+		this.titleLabel.addStyleName(ValoTheme.LABEL_H4);        // 스타일추가
+		this.titleLabel.addStyleName(ValoTheme.LABEL_COLORED);   // 스타일추가(color bule)
         
-        errorLabel = new Label();
-        errorLabel.addStyleName(ValoTheme.LABEL_FAILURE);
-        errorLabel.setVisible(false); // 처음에는 에러 라벨 숨기기
+		this.errorLabel.setId("error_label");
+        this.errorLabel.addStyleName(ValoTheme.LABEL_FAILURE);
+        this.errorLabel.setVisible(false);
 
-        final VerticalLayout labels = new VerticalLayout();
-        labels.addComponent(titleLabel);
-        labels.addComponent(errorLabel);
-        return labels;     
+        this.buildLabels.addComponent(titleLabel);
+        this.buildLabels.addComponent(errorLabel);  
 	}
 
-	private Component buildFields() {        
-        final TextField email = new TextField("Email");   // 이메일필드, Caption(“Email”)
-        email.setIcon(FontAwesome.USER);                     // FontAwesome Icon
-        email.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON); // Icon을 Field 안쪽에 표현
-        email.addValidator(new EmailValidator("Invalid e-mail address {0}"));//Email패턴검증
+	private void buildFields() {        
+		this.email.setId("email_field");
+		this.email.setIcon(FontAwesome.USER);                     // FontAwesome Icon
+		this.email.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON); // Icon을 Field 안쪽에 표현
+		this.email.addValidator(new EmailValidator("Invalid e-mail address {0}"));//Email패턴검증
 
-        final PasswordField password = new PasswordField("Password"); //패스워드필드
-        password.setIcon(FontAwesome.LOCK);
-        password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+        this.password.setId("password_field");
+        this.password.setIcon(FontAwesome.LOCK);
+        this.password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
-        final Button signin = new Button("Sign In");   // 로그인버튼
-        signin.addStyleName(ValoTheme.BUTTON_PRIMARY); // 버튼컬러(블루)
-        signin.setClickShortcut(KeyCode.ENTER);        // Enter키지원
-        signin.focus();                                // 포커싱
-        signin.addClickListener(new ClickListener() {  // 버튼 클릭시 이벤트처리
+        this.signin.setId("signin_button");
+        this.signin.addStyleName(ValoTheme.BUTTON_PRIMARY); // 버튼컬러(블루)
+        this.signin.setClickShortcut(KeyCode.ENTER);        // Enter키지원
+        this.signin.focus();                                // 포커싱
+        this.signin.addClickListener(new ClickListener() {  // 버튼 클릭시 이벤트처리
             @Override
             public void buttonClick(final ClickEvent event) {            	
                 try {
@@ -111,11 +157,9 @@ public class LoginScreen extends VerticalLayout {
             }
         });
 
-        HorizontalLayout fields = new HorizontalLayout(); // Component's를 담는 Layout
-        fields.setSpacing(true);
-        fields.addComponents(email, password, signin); // Layout에 모든 필드 추가(담기)
-        fields.setComponentAlignment(signin, Alignment.BOTTOM_LEFT); // 버튼 정렬
-        return fields;
+        this.buildFields.setSpacing(true);
+        this.buildFields.addComponents(email, password, signin); // Layout에 모든 필드 추가(담기)
+        this.buildFields.setComponentAlignment(signin, Alignment.BOTTOM_LEFT); // 버튼 정렬        
     }
 
 }
