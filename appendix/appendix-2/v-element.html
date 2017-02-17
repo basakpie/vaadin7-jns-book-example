@@ -1,0 +1,36 @@
+<!-- Defines element markup -->
+<template id="t_id">
+  <style>
+    ::content > * {
+      color: red;
+    }
+  </style>
+  <content></content>  
+  <span>cpation</span>
+  <input type="text"></input>
+  <button>alert</button>
+</template>
+<script>   
+	var thisDoc = document.currentScript.ownerDocument;
+    var proto = Object.create(HTMLElement.prototype);
+    
+    proto.createdCallback = function() {
+      var template = thisDoc.querySelector('#t_id');
+      var clone = document.importNode(template.content, true);
+      var root = this.createShadowRoot();
+      root.appendChild(clone);
+    
+      if (this.hasAttribute('caption')) {
+        var caption = this.getAttribute('caption');
+        root.querySelector('span').textContent = caption;
+      }
+      root.querySelector('button').addEventListener('click', function(e) {
+        var input = root.querySelector('input');
+        alert('input value: ' + input.value);
+      });      
+    }; 
+
+	document.registerElement('v-element', {prototype: proto});
+  })();
+</script>
+
