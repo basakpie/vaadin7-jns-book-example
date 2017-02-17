@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.vaadin.teemu.switchui.Switch;
+
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
@@ -97,31 +99,28 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
         title.addStyleName(ValoTheme.LABEL_H1);
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         
-        OptionGroup options = new OptionGroup(); // 선택그룹버튼추가
-        options.addItems("Session", "Question"); // 
-        options.addStyleName(ValoTheme.OPTIONGROUP_SMALL);
-        options.setVisible(false);
-        
-        options.addValueChangeListener(new ValueChangeListener(){
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				// 옵션 중 선택 되면 이벤트 발생
-				String optionValue = (String) event.getProperty().getValue();
-				sessionLayout.setVisible(optionValue.equals("Session"));
-				questionLayout.setVisible(optionValue.equals("Question"));
-			}
+        Switch onoffSwitch = new Switch("Question"); 
+        onoffSwitch.addValueChangeListener(new ValueChangeListener() {
+            public void valueChange(ValueChangeEvent event) {
+            	boolean checked = (boolean) event.getProperty().getValue();
+            	// On(true)   : sesseion(x), question(o)
+            	// Off(false) : sesseion(o), question(x)
+            	sessionLayout.setVisible(!checked);
+            	questionLayout.setVisible(checked);
+            }
         });
+        onoffSwitch.setImmediate(true);
         
         // 모바일 폰인 경우만 활성화 처리
-        if(isPhone()) {
-        	options.setVisible(true);
-        	options.select("Session");
+        if(!isPhone()) {
+        	onoffSwitch.setVisible(true);
+        	onoffSwitch.setValue(true);
         }
         
         HorizontalLayout topLayout = new HorizontalLayout();        
         topLayout.addStyleName("top-bar"); // title과 table간의 여백 추가
         topLayout.setWidth(100, Unit.PERCENTAGE);
-        topLayout.addComponents(title, options);
+        topLayout.addComponents(title, onoffSwitch);
         topLayout.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
         topLayout.setExpandRatio(title, 1);
         return topLayout;
