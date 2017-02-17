@@ -7,13 +7,11 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vseminar.data.LoadingDataGenerator;
+import com.vseminar.data.UserSession;
+import com.vseminar.screen.LoginScreen;
+import com.vseminar.screen.MainScreen;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -27,25 +25,20 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class VSeminarUI extends UI {
 
-    @Override
-    protected void init(VaadinRequest vaadinRequest) {
-        final VerticalLayout layout = new VerticalLayout();
-        
-        final TextField name = new TextField();
-        name.setCaption("Type your name here:");
+	// Mock Data를 생성.
+	@SuppressWarnings("unused")
+	private static final LoadingDataGenerator dataGenerator = new LoadingDataGenerator();
+	
+	@Override
+    protected void init(VaadinRequest vaadinRequest) {        
+    	if(UserSession.isSignedIn()) { // UserSession은 이어서 구현 예정…
+    		// Session에 값이 있으면 메인 스크린으로
+    	    setContent(new MainScreen(this));         
+    		return;
+    	}
+    	// Session에 값이 없으면 로그인 스크린으로
+    	setContent(new LoginScreen());
 
-        Button button = new Button("Click Me");
-        button.addClickListener(new ClickListener() {
-            @Override   
-            public void buttonClick(ClickEvent event) {     
-                layout.addComponent(new Label("Thanks " + name.getValue() + ", it works!"));
-            }
-        });
-        layout.addComponents(name, button);
-        layout.setMargin(true);
-        layout.setSpacing(true);
-        
-        setContent(layout);
     }
 
     @WebServlet(urlPatterns = "/*", name = "VSeminarUIServlet", asyncSupported = true)
