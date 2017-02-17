@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.vaadin.teemu.switchui.Switch;
-
+import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
@@ -30,7 +29,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
@@ -99,22 +97,24 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
         title.addStyleName(ValoTheme.LABEL_H1);
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         
-        Switch onoffSwitch = new Switch("Question"); 
-        onoffSwitch.addValueChangeListener(new ValueChangeListener() {
-            public void valueChange(ValueChangeEvent event) {
-            	boolean checked = (boolean) event.getProperty().getValue();
-            	// On(true)   : sesseion(x), question(o)
-            	// Off(false) : sesseion(o), question(x)
-            	sessionLayout.setVisible(!checked);
-            	questionLayout.setVisible(checked);
-            }
+        OnOffSwitch onoffSwitch = new OnOffSwitch();
+        onoffSwitch.setCaption("Question");
+        onoffSwitch.setVisible(false);        
+        
+        onoffSwitch.addValueChangeListener(new ValueChangeListener(){
+		    @Override
+		    public void valueChange(ValueChangeEvent event) {
+		    	boolean checked = (boolean) event.getProperty().getValue();
+			    // On(true)   : sesseion(x), question(o)
+			    // Off(false) : sesseion(o), question(x)
+			    sessionLayout.setVisible(!checked);
+			    questionLayout.setVisible(checked);
+			}
         });
-        onoffSwitch.setImmediate(true);
         
         // 모바일 폰인 경우만 활성화 처리
-        if(!isPhone()) {
+        if(isPhone()) {
         	onoffSwitch.setVisible(true);
-        	onoffSwitch.setValue(true);
         }
         
         HorizontalLayout topLayout = new HorizontalLayout();        
