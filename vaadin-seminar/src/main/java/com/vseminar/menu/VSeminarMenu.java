@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -20,7 +21,10 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vseminar.data.UserSession;
 import com.vseminar.data.model.RoleType;
+import com.vseminar.data.model.User;
+import com.vseminar.view.AbstractForm.SaveHandler;
 import com.vseminar.view.DashboardView;
+import com.vseminar.view.UserForm;
 
 @SuppressWarnings("serial")
 public class VSeminarMenu extends CssLayout {
@@ -66,7 +70,18 @@ public class VSeminarMenu extends CssLayout {
 		userMenuItem.addItem("Edit Profile", new MenuBar.Command() {
             @Override
             public void menuSelected(final MenuItem selectedItem) {
-            	// 회원정보수정은 폼(Form)만들기와 팝업(Window)컨트롤의 이해에서 개발 진행
+            	// 회원정보수정 폼(Form) 팝업(Window)으로 띄우기
+            	final UserForm userForm = new UserForm();
+            	userForm.lazyInit(UserSession.getUser()); // sub-window 설정
+            	userForm.openPopup("Edit Profile"); // sub-Window 타이틀
+            	// Form에서 데이터 저장 후 발생 할 이벤트를 등록 해 준다.
+            	userForm.setSaveHandler(new SaveHandler<User>() {
+					@Override
+					public void onSave(User user) {						
+						userForm.closePopup(); 	// 저장 후 sub-Window 닫기	
+						Page.getCurrent().reload(); // 화면 리로드
+					}
+				});
             }
         });
 		
