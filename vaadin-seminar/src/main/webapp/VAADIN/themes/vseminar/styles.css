@@ -12932,3 +12932,38 @@ div.v-layout.v-horizontal.v-widget {
 	width: 19px;
 	overflow: hidden;
 }
+
+.vseminar .login-screen {
+	background-image: url(img/vaadin-logo.png);
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+
+.vseminar .v-ui[width-range~="0-700px"] .login-screen {
+	background-size: 70%;
+}
+
+.vseminar .v-ui[width-range~="0-700px"] .login-screen .login-panel {
+	margin: 10px;
+}
+
+.vseminar .v-ui[width-range~="0-700px"] .login-screen .login-panel .labels .h4 {
+	display: block;
+}
+
+.vseminar .v-ui[width-range~="0-700px"] .login-screen .login-panel .v-slot {
+	display: block;
+}
+
+.vseminar .v-ui[width-range~="0-700px"] .login-screen .login-panel .v-slot .v-widget {
+	width: 100%;
+}
+
+.vseminar .v-ui[width-range~="0-700px"] .login-screen .login-panel .buttons {
+	width: 100%;
+}
+
+.vseminar .v-ui[width-range~="0-700px"] .login-screen .login-panel .buttons .v-button {
+	display: block;
+	text-align: center;
+}

@@ -26,6 +26,8 @@ public class LoginScreen extends VerticalLayout {
     Label errorLabel;
 
 	public LoginScreen() {
+		// Layout에 CSS Style 추가
+		addStyleName("login-screen"); 
         // 1. 유저 세션 처리를 위한 객체 선언
 		userSession = new UserSession();		
         // Layout에 CSS Sytle 추가
@@ -42,6 +44,7 @@ public class LoginScreen extends VerticalLayout {
 	
 	private Component buildForm() {
         final VerticalLayout loginPanel = new VerticalLayout();
+        loginPanel.addStyleName("login-panel"); // 스타일 추가
         loginPanel.setSizeUndefined(); // setWidth,setHeight(-1, Unit.PIXELS)
         loginPanel.setSpacing(true);   // Margin or Spacing을 통해 여백처리
         loginPanel.addComponent(buildLabels());  // 타이틀s(welcome to vaadin seminar)

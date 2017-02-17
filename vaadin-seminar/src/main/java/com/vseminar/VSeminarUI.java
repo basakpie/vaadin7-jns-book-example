@@ -6,6 +6,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
@@ -31,7 +32,10 @@ public class VSeminarUI extends UI {
 	private static final LoadingDataGenerator dataGenerator = new LoadingDataGenerator();
 	
 	@Override
-    protected void init(VaadinRequest vaadinRequest) {    	
+    protected void init(VaadinRequest vaadinRequest) {
+		// 반응형 웹 설정
+		Responsive.makeResponsive(this);
+
     	if(UserSession.isSignedIn()) {
     		// Session에 값이 있으면 메인스크린으로
             setContent(new MainScreen());

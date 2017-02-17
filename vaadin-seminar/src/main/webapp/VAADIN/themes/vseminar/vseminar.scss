@@ -29,10 +29,50 @@
 // For more information, see: https://vaadin.com/book/-/page/themes.valo.html
 // Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
 
+// src/main/webapp/VAADIN/themes/vseminar/img/vaadin-logo.png
+$login-background-image: "img/vaadin-logo.png" !default;
+
+//Valotheme의 모든 style이 import 되어 진다.
 @import "../valo/valo.scss";
 
 @mixin vseminar {
-  @include valo;
 
-  // Insert your own theme rules here
+  @include valo;  
+  
+  // 배경이미지 
+  .login-screen {
+    @if $login-background-image {
+      background-image: url(#{$login-background-image});
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+    }
+  }
+  
+  // 화면 가로폭이 700px 이하면 동작    
+  .v-ui[width-range~="0-700px"] {
+    .login-screen {
+      background-size: 70%;
+      .login-panel {     
+        margin: 10px;         
+        .labels .h4 {
+          display: block;
+        }
+        .v-slot {
+          display: block;
+          .v-widget {
+            width: 100%;
+          }
+        }
+        .buttons {
+          width: 100%;
+          .v-button {
+            display: block;
+            text-align: center;
+          }
+        }
+      }
+    }
+  } 
+      
 }
+

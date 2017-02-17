@@ -3,15 +3,23 @@ package com.vseminar.screen;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vseminar.menu.VSeminarMenu;
 import com.vseminar.menu.VSeminarNavigator;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Responsive;
 import com.vseminar.view.ErrorView;
 
 @SuppressWarnings("serial")
 public class MainScreen extends HorizontalLayout {
 	
 	public MainScreen() {
+		// 반응형 웹 적용
+		Responsive.makeResponsive(this);	
+
+		// .valo-menu-responsive(반응형 메뉴 스타일) CSS를 MainScreen에 추가
+		addStyleName(ValoTheme.UI_WITH_MENU);
+
 		// View가 동적으로 바뀌어 보이게 되는 빈 Layout
 		CssLayout viewArea = new CssLayout();
 		viewArea.setSizeFull();
