@@ -32,20 +32,32 @@
 // src/main/webapp/VAADIN/themes/vseminar/img/vaadin-logo.png
 $login-background-image: "img/vaadin-logo.png" !default;
 
-//Valotheme의 모든 style이 import 되어 진다.
 @import "../valo/valo.scss";
 
 @mixin vseminar {
-
-  @include valo;  
-  
-  // 배경이미지 
+  @include valo;
   .login-screen {
     @if $login-background-image {
       background-image: url(#{$login-background-image});
       background-repeat: no-repeat;
       background-position: 50% 50%;
     }
+  }
+      
+  .top-bar {
+    padding: 15px;
+  }
+  
+  .v-table-cell-content-v-round-image .v-table-cell-wrapper img, 
+  .v-table-cell-content .v-round-image {
+    width: 25px;
+    height: 25px;
+    border-radius: 29px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05); 
+    display: block;   
+    vertical-align:middle;
+    margin: 0 auto 0.3em;
+    border: 1px solid #c5c5c5;
   }
   
   // 화면 가로폭이 700px 이하면 동작    
@@ -73,6 +85,4 @@ $login-background-image: "img/vaadin-logo.png" !default;
       }
     }
   } 
-      
 }
-

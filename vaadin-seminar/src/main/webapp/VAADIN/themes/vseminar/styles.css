@@ -12939,6 +12939,21 @@ div.v-layout.v-horizontal.v-widget {
 	background-position: 50% 50%;
 }
 
+.vseminar .top-bar {
+	padding: 15px;
+}
+
+.vseminar .v-table-cell-content-v-round-image .v-table-cell-wrapper img, .vseminar .v-table-cell-content .v-round-image {
+	width: 25px;
+	height: 25px;
+	border-radius: 29px;
+	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+	display: block;
+	vertical-align: middle;
+	margin: 0 auto 0.3em;
+	border: 1px solid #c5c5c5;
+}
+
 .vseminar .v-ui[width-range~="0-700px"] .login-screen {
 	background-size: 70%;
 }
