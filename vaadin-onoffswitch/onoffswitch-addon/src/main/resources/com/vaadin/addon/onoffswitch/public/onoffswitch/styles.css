@@ -1,7 +1,40 @@
-div.onoffswitch {
-	cursor: pointer;
-	user-select: none;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
+.onoffswitch {
+    position: relative; width: 55px;
+    display: inline-block;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+
+.onoffswitch:focus {
+    outline-style:none;
+}
+
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-slider {
+    display: block; overflow: hidden; cursor: pointer;
+    height: 27px; padding: 0; line-height: 27px;
+    border: 2px solid #CCCCCC; border-radius: 27px;
+    background-color: #FFFFFF;
+    transition: background-color 0.3s ease-in;
+}
+.onoffswitch-slider:before {
+    content: "";
+    display: block; width: 27px; margin: 0px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 26px;
+    border: 2px solid #CCCCCC; border-radius: 27px;
+    transition: all 0.3s ease-in 0s; 
+}
+.onoffswitch-slider.on {
+    background-color: #197CDD;
+    border-color: #197CDD;
+}
+
+.onoffswitch-slider.on:before {  
+  border-color: #197CDD;
+  -webkit-transform: translateX(27px);
+  -ms-transform: translateX(27px);
+  transform: translateX(27px);
 }

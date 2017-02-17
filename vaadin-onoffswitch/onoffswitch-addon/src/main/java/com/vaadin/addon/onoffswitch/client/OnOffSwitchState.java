@@ -1,8 +1,10 @@
 package com.vaadin.addon.onoffswitch.client;
 
-public class OnOffSwitchState extends com.vaadin.shared.AbstractComponentState {
+import com.vaadin.shared.AbstractFieldState;
 
-	// State can have both public variable and bean properties
-	public String text = "OnOffSwitch";
+@SuppressWarnings("serial")
+public class OnOffSwitchState extends AbstractFieldState {
+	
+	public boolean checked;
 
 }

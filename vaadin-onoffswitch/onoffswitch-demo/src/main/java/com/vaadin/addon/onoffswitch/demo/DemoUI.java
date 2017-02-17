@@ -7,6 +7,8 @@ import javax.servlet.annotation.WebServlet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Alignment;
@@ -27,15 +29,19 @@ public class DemoUI extends UI
     @Override
     protected void init(VaadinRequest request) {
 
-        // Initialize our new UI component
-        final OnOffSwitch component = new OnOffSwitch();
+    	final OnOffSwitch onOffSwitch = new OnOffSwitch(false);
+        onOffSwitch.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				boolean checked = (boolean)event.getProperty().getValue();
+				System.out.println("OnOffSwitch checked : " + checked);
+			}
+        });
 
-        // Show it in the middle of the screen
         final VerticalLayout layout = new VerticalLayout();
-        layout.setStyleName("demoContentLayout");
         layout.setSizeFull();
-        layout.addComponent(component);
-        layout.setComponentAlignment(component, Alignment.MIDDLE_CENTER);
+        layout.addComponent(onOffSwitch);
+        layout.setComponentAlignment(onOffSwitch, Alignment.MIDDLE_CENTER);
         setContent(layout);
 
     }

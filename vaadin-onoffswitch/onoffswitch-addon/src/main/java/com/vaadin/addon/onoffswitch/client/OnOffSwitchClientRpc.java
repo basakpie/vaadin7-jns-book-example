@@ -2,11 +2,9 @@ package com.vaadin.addon.onoffswitch.client;
 
 import com.vaadin.shared.communication.ClientRpc;
 
-// ClientRpc is used to pass events from server to client
-// For sending information about the changes to component state, use State instead
 public interface OnOffSwitchClientRpc extends ClientRpc {
-
-	// Example API: Fire up alert box in client
+	
+    // 서버측에서의 클라이언트 호출 메서드 정의 
 	public void alert(String message);
-
+	
 }

@@ -3,42 +3,59 @@ package com.vaadin.addon.onoffswitch;
 import com.vaadin.addon.onoffswitch.client.OnOffSwitchClientRpc;
 import com.vaadin.addon.onoffswitch.client.OnOffSwitchServerRpc;
 import com.vaadin.addon.onoffswitch.client.OnOffSwitchState;
+import com.vaadin.ui.AbstractField;
 
-import com.vaadin.shared.MouseEventDetails;
-
-// This is the server-side UI component that provides public API 
-// for OnOffSwitch
-public class OnOffSwitch extends com.vaadin.ui.AbstractComponent {
-
-	private int clickCount = 0;
-
-	// To process events from the client, we implement ServerRpc
-	private OnOffSwitchServerRpc rpc = new OnOffSwitchServerRpc() {
-
-		// Event received from client - user clicked our widget
-		public void clicked(MouseEventDetails mouseDetails) {
-			
-			// Send nag message every 5:th click with ClientRpc
-			if (++clickCount % 5 == 0) {
-				getRpcProxy(OnOffSwitchClientRpc.class)
-						.alert("Ok, that's enough!");
-			}
-			
-			// Update shared state. This state update is automatically 
-			// sent to the client. 
-			getState().text = "You have clicked " + clickCount + " times";
-		}
+@SuppressWarnings("serial")
+public class OnOffSwitch extends AbstractField<Boolean> { 
+	
+	// 서버 RPC Receiver 구현 
+	private OnOffSwitchServerRpc serverRpc = new OnOffSwitchServerRpc() {
+		@Override
+		public void clicked(boolean checked) {
+		    if (isReadOnly()) {
+	                return;
+	            }
+	            final Boolean oldValue = getValue(); // 서버 value
+	            final Boolean newValue = checked;    // 클라이언트측 요청 Value
+	            // 양쪽 Value가 틀린 경우 Click 상태 값 변경 
+	            if (!newValue.equals(oldValue)) {
+	            	// 서버측 Value 변경
+	                setValue(newValue);
+	            }
+	            // 클라이언트 RPC alert 메서드 호출
+	            getRpcProxy(OnOffSwitchClientRpc.class).alert(String.valueOf(newValue));
+	    };
 	};
-
-	public OnOffSwitch() {
-
-		// To receive events from the client, we register ServerRpc
-		registerRpc(rpc);
+	
+	public OnOffSwitch() {	
+		registerRpc(serverRpc); // 서버 RPC Receiver 등록
+	        setValue(Boolean.FALSE);
 	}
-
-	// We must override getState() to cast the state to OnOffSwitchState
+	
+	public OnOffSwitch(boolean checked) {
+	    this();    
+	    setValue(checked); // 서버 On/Off Value
+	}
+	
 	@Override
-	protected OnOffSwitchState getState() {
-		return (OnOffSwitchState) super.getState();
+	public Class<? extends Boolean> getType() {
+		return Boolean.class;
 	}
+	
+    @Override
+    protected void setInternalValue(Boolean newValue) {
+        super.setInternalValue(newValue);
+        if (newValue == null) {
+            newValue = false;
+        }
+        // 상태 필드 값을 변경 하여 OnOffSwitchConnector onStateChanged method가 call이 되도록 한다.
+        getState().checked = newValue;
+    }
+
+    @Override
+    protected OnOffSwitchState getState() {
+        return (OnOffSwitchState) super.getState();
+    }
+
 }
+
