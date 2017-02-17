@@ -15,8 +15,6 @@ public class ErrorView extends VerticalLayout implements View {
 	private Label explanation;
 	
 	public ErrorView() {
-		removeAllComponents();
-		setSizeFull();
 		setMargin(true);
 	    setSpacing(true);
 	

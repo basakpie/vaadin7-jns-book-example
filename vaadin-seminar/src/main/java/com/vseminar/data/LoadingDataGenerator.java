@@ -1,12 +1,20 @@
 package com.vseminar.data;
 
+import com.vaadin.server.FontAwesome;
 import com.vseminar.data.model.RoleType;
 import com.vseminar.data.model.User;
+import com.vseminar.menu.Navi;
+import com.vseminar.menu.VSeminarNavigator;
+import com.vseminar.view.AboutView;
+import com.vseminar.view.DashboardView;
+import com.vseminar.view.SessionView;
+import com.vseminar.view.UserView;
 
 public final class LoadingDataGenerator {
 	
 	static {
-		createUsers();
+		createUsers(); // User Mock Data
+		createNavis(); // Navi Mock Data
 	}
 	
 	private static void createUsers() {
@@ -17,4 +25,11 @@ public final class LoadingDataGenerator {
 		userData.save(new User("admin", "admin@vseminar.com", "1234", null, RoleType.Admin));
 	}	
 	
+	private static void createNavis() {
+		VSeminarNavigator.naviMaps.put("",        new Navi(DashboardView.VIEW_NAME, "Dashboard", DashboardView.class, FontAwesome.HOME,  RoleType.User));
+		VSeminarNavigator.naviMaps.put("session", new Navi(SessionView.VIEW_NAME,   "Session",   SessionView.class,   FontAwesome.CUBE,  RoleType.User));
+		VSeminarNavigator.naviMaps.put("about",   new Navi(AboutView.VIEW_NAME,     "About",     AboutView.class,     FontAwesome.INFO,  RoleType.User));
+		VSeminarNavigator.naviMaps.put("user",    new Navi(UserView.VIEW_NAME,      "User",      UserView.class,      FontAwesome.USERS, RoleType.Admin));		
+	}
+
 }
