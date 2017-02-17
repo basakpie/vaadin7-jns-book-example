@@ -12954,6 +12954,28 @@ div.v-layout.v-horizontal.v-widget {
 	border: 1px solid #c5c5c5;
 }
 
+.vseminar .dashboard-view .view-content[width-range~="0-700px"] {
+	padding: 0px;
+	display: block;
+	overflow-y: auto;
+}
+
+.vseminar .dashboard-view .view-content[width-range~="0-700px"] .view-content-panel {
+	width: 100% !important;
+}
+
+.vseminar .dashboard-view .view-content[width-range~="700px-"] {
+	padding: 0px 12px 12px 12px;
+}
+
+.vseminar .dashboard-view .view-content[width-range~="700px-"] .view-content-panel:first-child {
+	padding: 0px 12px 0px 0px;
+}
+
+.vseminar .dashboard-view .view-content[width-range~="700px-"] .view-content-panel {
+	width: 50% !important;
+}
+
 .vseminar .v-ui[width-range~="0-700px"] .login-screen {
 	background-size: 70%;
 }
@@ -12981,4 +13003,15 @@ div.v-layout.v-horizontal.v-widget {
 .vseminar .v-ui[width-range~="0-700px"] .login-screen .login-panel .buttons .v-button {
 	display: block;
 	text-align: center;
+}
+
+.vseminar .v-ui[width-range~="0-700px"] .top-bar .v-label {
+	font-size: 1.6em;
+}
+
+.vseminar .v-ui[width-range~="0-700px"] .top-bar .v-button {
+	height: 28px;
+	padding: 0 13px;
+	font-size: 12px;
+	border-radius: 4px;
 }

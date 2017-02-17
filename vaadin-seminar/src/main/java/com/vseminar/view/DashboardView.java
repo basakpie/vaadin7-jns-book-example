@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -15,6 +17,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.BrowserFrame;
@@ -22,8 +25,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
@@ -56,6 +61,9 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
 	QuestionData questionData;
 	UserData userData;
 	
+	CssLayout sessionLayout;
+	CssLayout questionLayout;
+	
 	Table sessionTable;
 	Table questionTable;
 	
@@ -69,6 +77,7 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
 		questionData = QuestionData.getInstance();
 		userData = UserData.getInstance(); 
 		
+		addStyleName("dashboard-view");
 		setHeight(100, Unit.PERCENTAGE);
 		
 		Component createContent = createContent(); // Content 생성   
@@ -87,32 +96,59 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
         title.setSizeUndefined();
         title.addStyleName(ValoTheme.LABEL_H1);
         title.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-          
-        HorizontalLayout topLayout = new HorizontalLayout();
-        topLayout.addStyleName("top-bar"); // title의 여백 추가
-        topLayout.setSpacing(true);
+        
+        OptionGroup options = new OptionGroup(); // 선택그룹버튼추가
+        options.addItems("Session", "Question"); // 
+        options.addStyleName(ValoTheme.OPTIONGROUP_SMALL);
+        options.setVisible(false);
+        
+        options.addValueChangeListener(new ValueChangeListener(){
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// 옵션 중 선택 되면 이벤트 발생
+				String optionValue = (String) event.getProperty().getValue();
+				sessionLayout.setVisible(optionValue.equals("Session"));
+				questionLayout.setVisible(optionValue.equals("Question"));
+			}
+        });
+        
+        // 모바일 폰인 경우만 활성화 처리
+        if(isPhone()) {
+        	options.setVisible(true);
+        	options.select("Session");
+        }
+        
+        HorizontalLayout topLayout = new HorizontalLayout();        
+        topLayout.addStyleName("top-bar"); // title과 table간의 여백 추가
         topLayout.setWidth(100, Unit.PERCENTAGE);
-        topLayout.addComponents(title);
-        topLayout.setComponentAlignment(title, Alignment.MIDDLE_LEFT);        
+        topLayout.addComponents(title, options);
+        topLayout.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
+        topLayout.setExpandRatio(title, 1);
         return topLayout;
-    }
+	}
 	
 	private Component createContent() {		
 		// ① contentLayout = ② sessionLayout + ③ questionLayout
-		HorizontalLayout contentLayout = new HorizontalLayout();
+		CssLayout contentLayout = new CssLayout();
+		// Flexible Wrapping 방식의 Responsive.makeResponsive 처리
+		Responsive.makeResponsive(contentLayout);
+		contentLayout.addStyleName("view-content");
 		contentLayout.setSizeFull();
-		contentLayout.setSpacing(true);
 		
 		// ② sessionLayout
-		VerticalLayout sessionLayout = new VerticalLayout();		
-		sessionLayout.setSizeFull();
+		sessionLayout = new CssLayout();
+		// Responsive-Web 영역 CSS 추가
+		sessionLayout.addStyleName("view-content-panel"); 
+		sessionLayout.setSizeFull();		
 		sessionLayout.addComponent(createSessionTab());
 		
 		// ③ questionLayout
-		VerticalLayout questionLayout = new VerticalLayout();
+		questionLayout = new CssLayout();
+		// Responsive-Web 영역 CSS 추가
+		questionLayout.addStyleName("view-content-panel");
 		questionLayout.setSizeFull();
 		questionLayout.addComponent(createQuestionTab());
-						
+								
 		contentLayout.addComponent(sessionLayout);
 		contentLayout.addComponent(questionLayout);
 	    return contentLayout;
@@ -394,7 +430,7 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
 		questionTable.getContainerDataSource().addItem(question);
 		// 신규 메시지 도착으로 상태가 변경
 		hasNewItem.set(true);
-	}	
+	}
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -421,6 +457,15 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
 				}
 			}
 		}
+	}
+	
+	private boolean isPhone() {
+		if(UI.getCurrent().getPage().getWebBrowser().isAndroid() || UI.getCurrent().getPage().getWebBrowser().isIPhone()) {
+			if(UI.getCurrent().getPage().getBrowserWindowWidth()<500) {
+				return true;
+			}
+		}
+		return false;
 	}
 		
 }

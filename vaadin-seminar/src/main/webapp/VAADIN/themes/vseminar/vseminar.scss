@@ -60,6 +60,26 @@ $login-background-image: "img/vaadin-logo.png" !default;
     border: 1px solid #c5c5c5;
   }
   
+  .dashboard-view {
+    .view-content[width-range~="0-700px"] {
+      padding: 0px;      
+      display: block;
+      overflow-y: auto;
+      .view-content-panel {
+        width: 100% !important;
+      }
+    }
+    .view-content[width-range~="700px-"] {
+      padding: 0px 12px 12px 12px;
+      .view-content-panel:first-child {
+        padding: 0px 12px 0px 0px;
+      }
+      .view-content-panel {
+        width: 50% !important;
+      }
+    }
+  }
+  
   // 화면 가로폭이 700px 이하면 동작    
   .v-ui[width-range~="0-700px"] {
     .login-screen {
@@ -83,6 +103,18 @@ $login-background-image: "img/vaadin-logo.png" !default;
           }
         }
       }
+    }
+    
+    .top-bar {
+      .v-label {
+        font-size: 1.6em;
+      }
+      .v-button {
+        height: 28px;
+        padding: 0 13px;
+        font-size: 12px;
+        border-radius: 4px; 
+      }    
     }
   } 
 }
