@@ -3,6 +3,7 @@ package com.vseminar.view;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -29,6 +30,7 @@ import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vseminar.data.QuestionData;
@@ -40,9 +42,13 @@ import com.vseminar.data.model.Question;
 import com.vseminar.data.model.Session;
 import com.vseminar.data.model.User;
 import com.vseminar.image.ImageUploader;
+import com.vseminar.push.MessageEventBus;
+import com.vseminar.push.MessageEventBus.EventBusListener;
 
-@SuppressWarnings("serial")
-public class DashboardView extends VerticalLayout implements View {	
+@SuppressWarnings({"serial", "static-access"})
+public class DashboardView extends VerticalLayout implements View, EventBusListener {	
+	
+	private static final MessageEventBus eventBus = new MessageEventBus();
 	
 	public static final String VIEW_NAME = "";
 	
@@ -56,6 +62,8 @@ public class DashboardView extends VerticalLayout implements View {
 	TextArea textArea;
 	Button button;	
 	
+	AtomicBoolean hasNewItem;
+	
 	public DashboardView() {		
 		sessionData = SessionData.getInstance();
 		questionData = QuestionData.getInstance();
@@ -68,7 +76,10 @@ public class DashboardView extends VerticalLayout implements View {
 		
 		addComponent(createTopBar()); // title 추가
 		addComponent(createContent); // content tabs 추가
-		setExpandRatio(createContent, 1); 
+		setExpandRatio(createContent, 1);
+		
+		hasNewItem = new AtomicBoolean(); // 신규 메시지 도착 여부
+		new RefreshThread().start(); // 새로 고침 스레드 시작
 	}
 	
 	public HorizontalLayout createTopBar() {
@@ -260,7 +271,7 @@ public class DashboardView extends VerticalLayout implements View {
 		return table;
 	}
 	
-	private Component createSendLayout() {		
+	private Component createSendLayout() {
 		// 질문 입력 텍스트박스
 		textArea = new TextArea();		
 		textArea.setWidth(100, Unit.PERCENTAGE);
@@ -313,6 +324,8 @@ public class DashboardView extends VerticalLayout implements View {
 		textArea.setValue("");
 		// 테이블스크롤이동
 		scrollEnd();
+		// 신규 메시지 보내기
+		eventBus.send(question);
 	}
 	
 	private void findSessionBean() {
@@ -327,11 +340,11 @@ public class DashboardView extends VerticalLayout implements View {
 
 	private void clickSession(Session session) {
 		// 현재 선택된 item(Session) 정보 담아두기
-		sessionTable.setNullSelectionItemId(session);
+		sessionTable.setNullSelectionItemId(session); 		 
 		Set<Long> questionIds = session.getQuestions();
 		if(questionIds.size()<=0) return;		
 		findByQuestionIds(session.getQuestions());
-		//button.focus(); 	
+		button.focus(); 	
 	}
 	
 	private void findByQuestionIds(Set<Long> ids) {		
@@ -341,7 +354,7 @@ public class DashboardView extends VerticalLayout implements View {
 		for(Question itemId: questions) {
 			questionTable.getContainerDataSource().addItem(itemId);
 		}
-		// 최신 질문 리스트 데이터 바인딩 후 스크롤을 하단으로 이동
+		// 처음 질문 리스트를 가져 왔을 때도 스크롤 맨 밑으로 이동 처리 추가
 		scrollEnd();
 	}
 	
@@ -351,14 +364,63 @@ public class DashboardView extends VerticalLayout implements View {
 		if(itemSize<questionTable.getPageLength()) {
 			questionTable.setPageLength(itemSize);
 		}
-		// 스크롤을 해당 아이템으로 움직여 주기
+		// 스크롤을 밑으로 내려 주기
 		questionTable.setCurrentPageFirstItemId(questionTable.lastItemId());
-		// 해당 아이템을 클릭 상태로 변경
+		// 아이템 선택 상태로 변경
 		questionTable.select(questionTable.lastItemId());
 	}
 	
+	@Override	
+    public void attach() {
+    	eventBus.register(this); // 수신 등록
+        super.attach();
+    }    
+	
+	@Override
+	public void detach() {
+	   	eventBus.unregister(this); // 수신 해제
+	    super.detach();
+	}
+	
+	@Override
+	public void receive(Question question) {
+		// 신규 메시지 수신하기
+		Session selectedSession = (Session)sessionTable.getNullSelectionItemId();
+		// 신규 메시지가 현재 선택된 세션과 동일한지
+		if(selectedSession.getId()!=question.getSessionId()) return;
+		// 신규 메시지가 중복된 메시지 인지.
+		if(questionTable.getContainerDataSource().containsId(question)) return;
+		// 신규 메시지 질문 테이블에 추가 하기
+		questionTable.getContainerDataSource().addItem(question);
+		// 신규 메시지 도착으로 상태가 변경
+		hasNewItem.set(true);
+	}	
+	
 	@Override
 	public void enter(ViewChangeEvent event) {
+	}
+	
+	class RefreshThread extends Thread {
+		@Override
+		public void run() {			
+			while (true) {
+				try {
+					Thread.sleep(1000);					
+					if(hasNewItem.get()) {
+						// 신규 메시지가 도착 상태면 서버 푸쉬 진행
+						UI.getCurrent().access(new Runnable(){
+							@Override
+							public void run() {
+								scrollEnd();
+							}
+						});
+						hasNewItem.set(false);
+					}			
+				} catch (InterruptedException e) {
+					hasNewItem.set(false);
+				}
+			}
+		}
 	}
 		
 }
