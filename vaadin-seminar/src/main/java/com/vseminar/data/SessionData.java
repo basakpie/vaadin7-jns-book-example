@@ -12,39 +12,21 @@ import com.vseminar.data.model.Question;
 import com.vseminar.data.model.Session;
 import com.vseminar.data.model.User;
 
+@org.springframework.stereotype.Repository
 public class SessionData implements VSeminarData<Session> {
 
-	private static volatile SessionData INSTANCE = null;
-	
-	private Map<Long, Session> sessions;
-	
-	private AtomicLong nextId;
-	
-	private SessionData() {
-		nextId = new AtomicLong();
-		sessions = new LinkedHashMap<>();
-	}
-	
-	public synchronized static SessionData getInstance() {		
-		if(INSTANCE==null){
-	        synchronized (SessionData.class){
-	            if(INSTANCE==null){
-	            	INSTANCE = new SessionData();
-	            }
-	        }
-	    }
-        return INSTANCE;
-    }
-	
+	private Map<Long, Session> sessions = new LinkedHashMap<>();
+	private AtomicLong nextId = new AtomicLong(0);
+		
 	@Override
-	public synchronized Session findOne(long id) {
+	public Session findOne(long id) {
 		Session session = sessions.get(id);
 		if(session!=null) return session;
         return new Session();
 	}
 
 	@Override
-	public synchronized List<Session> findAll() {
+	public List<Session> findAll() {
 		return Collections.unmodifiableList(new ArrayList<>(sessions.values()));
 	}
 	
@@ -54,7 +36,7 @@ public class SessionData implements VSeminarData<Session> {
 	}
 
 	@Override
-	public synchronized Session save(Session session) {
+	public Session save(Session session) {
 		List<Session> checkSessions = findByTitle(session.getTitle());	
 		if (session.getId()==null) {
 			if(checkSessions.size()>0) {
@@ -75,7 +57,7 @@ public class SessionData implements VSeminarData<Session> {
 	}
 	
 	@Override
-	public synchronized void delete(long id) {
+	public void delete(long id) {
 		Session session = findOne(id);
         if (session == null) {
             throw new IllegalArgumentException("Session with id " + id + " not found");
@@ -83,7 +65,7 @@ public class SessionData implements VSeminarData<Session> {
         sessions.remove(session.getId());
 	}
 	
-	public synchronized List<Session> findByTitle(String title) {
+	public List<Session> findByTitle(String title) {
 		List<Session> sessions = findAll();
 		List<Session> reusts = new ArrayList<>();
     	for(Session session: sessions) {
@@ -94,7 +76,7 @@ public class SessionData implements VSeminarData<Session> {
     	return reusts;
 	}
 		
-	public synchronized List<Session> findByOwner(User owner) {
+	public List<Session> findByOwner(User owner) {
 		List<Session> sessions = findAll();
 		List<Session> reusts = new ArrayList<>();
     	for(Session session: sessions) {
@@ -105,7 +87,7 @@ public class SessionData implements VSeminarData<Session> {
     	return reusts;
 	}
 	
-	public synchronized void addMessage(Question question) {
+	public void addMessage(Question question) {
 		Session session = sessions.get(question.getSessionId());
 		Set<Long> questions = session.getQuestions();
 		questions.add(question.getId());

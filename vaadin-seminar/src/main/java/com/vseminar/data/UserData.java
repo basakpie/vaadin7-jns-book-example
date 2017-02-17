@@ -9,39 +9,21 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.vseminar.data.model.User;
 
+@org.springframework.stereotype.Repository
 public class UserData implements VSeminarData<User> {
 
-	private static volatile UserData INSTANCE = null;
-	
-	private Map<Long, User> users;
-	
-	private AtomicLong nextId;
-	
-	private UserData() {
-		nextId = new AtomicLong();
-		users = new LinkedHashMap<>();
-	}
-	
-	public synchronized static UserData getInstance() {		
-		if(INSTANCE==null){
-	        synchronized (UserData.class){
-	            if(INSTANCE==null){
-	            	INSTANCE = new UserData();
-	            }
-	        }
-	    }
-        return INSTANCE;
-    }
+	private Map<Long, User> users = new LinkedHashMap<>();	
+	private AtomicLong nextId = new AtomicLong(0);
 	
 	@Override
-	public synchronized User findOne(long id) {
+	public User findOne(long id) {
 		User user = users.get(id);
 		if(user!=null) return user;
         return new User();
 	}
 
 	@Override
-	public synchronized List<User> findAll() {
+	public List<User> findAll() {
 		return Collections.unmodifiableList(new ArrayList<>(users.values()));
 	}
 	
@@ -51,7 +33,7 @@ public class UserData implements VSeminarData<User> {
 	}
 
 	@Override
-	public synchronized User save(User user) {
+	public User save(User user) {
 		User checkUser;		
 		if (user.getId()==null) {
 			checkUser = findByNameOrEmail(user.getName(), user.getEmail());
@@ -74,7 +56,7 @@ public class UserData implements VSeminarData<User> {
 	}
 		
 	@Override
-	public synchronized void delete(long id) {
+	public void delete(long id) {
 		User user = findOne(id);
         if (user == null) {
             throw new IllegalArgumentException("User with id " + id + " not found");
@@ -82,7 +64,7 @@ public class UserData implements VSeminarData<User> {
         users.remove(user.getId());
 	}
 	
-	public synchronized User findByName(String name) {
+	public User findByName(String name) {
 		List<User> users = findAll();
     	for(User user: users) {
     		if(user.getName().equals(name)) {
@@ -92,7 +74,7 @@ public class UserData implements VSeminarData<User> {
     	return new User();
 	}
 	
-	public synchronized User findByNameOrEmail(String name, String email) {
+	public User findByNameOrEmail(String name, String email) {
 		List<User> users = findAll();
     	for(User user: users) {
     		if(user.getName().equals(name) || user.getEmail().equals(email)) {
@@ -102,7 +84,7 @@ public class UserData implements VSeminarData<User> {
     	return new User();
 	}
 	
-	public synchronized User findByEmailAndPassword(String email, String password) {
+	public User findByEmailAndPassword(String email, String password) {
 		List<User> users = findAll();
     	for(User user: users) {
     		if(user.getEmail().equals(email) && user.getPassword().equals(password)) {

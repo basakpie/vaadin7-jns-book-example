@@ -1,9 +1,15 @@
 package com.vseminar.screen;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -11,7 +17,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -19,17 +24,25 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vseminar.data.UserNotFoundException;
 import com.vseminar.data.UserSession;
 
+@SpringComponent
+@UIScope
 @SuppressWarnings("serial")
 public class LoginScreen extends VerticalLayout {
 
-    UserSession userSession;    
+	UserSession userSession;    
     Label errorLabel;
 
-	public LoginScreen() {
+    @Autowired
+    public LoginScreen(UserSession userSession) {
+    	this.userSession = userSession;
+    }
+
+    @PostConstruct
+	public void init() {
 		// Layout에 CSS Style 추가
 		addStyleName("login-screen"); 
         // 1. 유저 세션 처리를 위한 객체 선언
-		userSession = new UserSession();		
+		// userSession = new UserSession();		
         // Layout에 CSS Sytle 추가
 		addStyleName("login-screen");
 	    // 레이아웃사이즈를 화면 전체로 설정 한다.

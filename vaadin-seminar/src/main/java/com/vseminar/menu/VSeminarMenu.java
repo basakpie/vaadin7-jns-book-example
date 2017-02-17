@@ -36,7 +36,7 @@ public class VSeminarMenu extends CssLayout {
     private CssLayout menuPart; // 메뉴들을 담을 루트 레이아웃
     private CssLayout menuItems = new CssLayout(); // 메뉴아이템리스트 담을 레이아웃
 	
-    public VSeminarMenu(final VSeminarNavigator navigator) {
+    public VSeminarMenu(final VSeminarNavigator navigator, final UserForm userForm, final UserSession userSession) {
     	// ValoTheme.MENU** 는 이미 빌트인 되어 있는 Valo menu styles CSS이다.  
         setPrimaryStyleName(ValoTheme.MENU_ROOT);
         
@@ -63,16 +63,16 @@ public class VSeminarMenu extends CssLayout {
 		// ValoTheme Built-in user-menu Style 
 		userMenu.addStyleName("user-menu");
 		// 사용자메뉴에 아이템(프로필사진) 추가		
-		Resource image = new ThemeResource(UserSession.getUser().getImgPath());
-		final MenuItem userMenuItem = userMenu.addItem(UserSession.getUser().getName(), image, null);
+		Resource image = new ThemeResource(userSession.getUser().getImgPath());
+		final MenuItem userMenuItem = userMenu.addItem(userSession.getUser().getName(), image, null);
 		
 		// 아이템에 회원정보 수정 버튼 추가 
 		userMenuItem.addItem("Edit Profile", new MenuBar.Command() {
             @Override
             public void menuSelected(final MenuItem selectedItem) {
             	// 회원정보수정 폼(Form) 팝업(Window)으로 띄우기
-            	final UserForm userForm = new UserForm();
-            	userForm.lazyInit(UserSession.getUser()); // sub-window 설정
+            	// final UserForm userForm = new UserForm();
+            	userForm.lazyInit(userSession.getUser()); // sub-window 설정
             	userForm.openPopup("Edit Profile"); // sub-Window 타이틀
             	// Form에서 데이터 저장 후 발생 할 이벤트를 등록 해 준다.
             	userForm.setSaveHandler(new SaveHandler<User>() {
@@ -90,7 +90,7 @@ public class VSeminarMenu extends CssLayout {
 			@Override
 			public void menuSelected(MenuItem selectedItem) {
 				// 로그아웃처리
-				UserSession.signout();
+				userSession.signout();
 			}
 		});
 		

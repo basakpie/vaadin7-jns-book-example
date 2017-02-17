@@ -1,5 +1,9 @@
 package com.vseminar.view;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItem;
@@ -8,6 +12,8 @@ import com.vaadin.data.validator.NullValidator;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -33,8 +39,16 @@ import com.vseminar.data.model.RoleType;
 import com.vseminar.data.model.User;
 import com.vseminar.image.ImageUploader;
 
+@SpringComponent
+@UIScope
 @SuppressWarnings("serial")
 public class UserForm extends AbstractForm<User> {
+	
+	@Autowired
+	UserData userData;
+	
+	@Autowired
+	UserSession userSession;
 	
 	TextField name;
 	TextField email;
@@ -46,12 +60,16 @@ public class UserForm extends AbstractForm<User> {
 	Button save;
 	Button delete;
 	
-	UserData userData;
-	
 	Image image;
 	
-	public UserForm(){
-		userData = UserData.getInstance();
+	@Autowired
+	public UserForm(UserData userData, UserSession userSession) {
+		this.userData = userData;
+		this.userSession = userSession;
+	}
+	
+	@PostConstruct
+	public void init(){
         fieldGroup = new BeanFieldGroup<User>(User.class);    
 		
 		VerticalLayout root = new VerticalLayout();		
@@ -166,8 +184,8 @@ public class UserForm extends AbstractForm<User> {
 			fieldGroup.commit(); // 변경된 필드의 item의 property(s)의 value를 변경
 			User item = fieldGroup.getItemDataSource().getBean(); // 변경된 item을 가져오기
 			User entity = userData.save(item); // 변경된 item을 저장하기
-			if(UserSession.getUser().getId()==entity.getId()) {  
-				UserSession.setUser(entity); // 로그인한 사용자의 정보면 session도 갱신 처리
+			if(userSession.getUser().getId()==entity.getId()) {  
+				userSession.setUser(entity); // 로그인한 사용자의 정보면 session도 갱신 처리
 			}
 			getSaveHandler().onSave(entity); // saveHandler 호출
 		} catch (CommitException | IllegalArgumentException ex) {
@@ -211,12 +229,12 @@ public class UserForm extends AbstractForm<User> {
         
         // 수정금지처리
         email.setEnabled(item.getId()==null);
-        role.setEnabled(UserSession.getUser().getRole()==RoleType.Admin);
+        role.setEnabled(userSession.getUser().getRole()==RoleType.Admin);
         
         // 프로필이미지
         image.setSource(new ThemeResource(item.getImgPath()));
         
         // 로그인한 사용자 또는 신규 유저 생성시에는 삭제 버튼 감추기
-        delete.setVisible(item.getId()!=UserSession.getUser().getId() && item.getId()!=null);
+        delete.setVisible(item.getId()!=userSession.getUser().getId() && item.getId()!=null);
 	}	
 }

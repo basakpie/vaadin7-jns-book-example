@@ -29,7 +29,7 @@ public class ErrorView extends VerticalLayout implements View {
 	
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
-		explanation.setValue(String.format("You tried to navigate to a view ('%s') that does not exist.",event.getViewName()));
+		explanation.setValue(String.format("You tried to navigate to a view ('%s') that does not exist.", event.getViewName()));
     }
 }
 

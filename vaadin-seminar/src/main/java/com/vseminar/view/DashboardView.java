@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.addon.onoffswitch.OnOffSwitch;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -20,6 +24,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Button;
@@ -50,6 +55,7 @@ import com.vseminar.image.ImageUploader;
 import com.vseminar.push.MessageEventBus;
 import com.vseminar.push.MessageEventBus.EventBusListener;
 
+@SpringView(name = DashboardView.VIEW_NAME)
 @SuppressWarnings({"serial", "static-access"})
 public class DashboardView extends VerticalLayout implements View, EventBusListener {	
 	
@@ -60,6 +66,7 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
 	SessionData sessionData;
 	QuestionData questionData;
 	UserData userData;
+	UserSession userSession;
 	
 	CssLayout sessionLayout;
 	CssLayout questionLayout;
@@ -72,11 +79,16 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
 	
 	AtomicBoolean hasNewItem;
 	
-	public DashboardView() {		
-		sessionData = SessionData.getInstance();
-		questionData = QuestionData.getInstance();
-		userData = UserData.getInstance(); 
-		
+	@Autowired
+	public DashboardView(SessionData sessionData, QuestionData questionData, UserData userData, UserSession userSession) {
+		this.sessionData = sessionData; 
+		this.questionData = questionData;
+		this.userData = userData;
+		this.userSession = userSession;
+	}
+	
+	@PostConstruct
+	public void init(){		
 		addStyleName("dashboard-view");
 		setHeight(100, Unit.PERCENTAGE);
 		
@@ -352,7 +364,7 @@ public class DashboardView extends VerticalLayout implements View, EventBusListe
 		// 현재 선택된 item(Session) 정보 가져오기
 		Session session = (Session)sessionTable.getNullSelectionItemId(); 	
 		// 질문 메시지 저장하기
-		Question question = questionData.save(new Question(session.getId(), textValue, UserSession.getUser().getId()));
+		Question question = questionData.save(new Question(session.getId(), textValue, userSession.getUser().getId()));
 		// 테이블에 데이터 추가 하기
 		questionTable.getContainerDataSource().addItem(question);
 		// 입력필드 초기화

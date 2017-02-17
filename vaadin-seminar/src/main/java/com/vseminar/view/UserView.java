@@ -2,6 +2,10 @@ package com.vseminar.view;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -11,6 +15,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -29,20 +34,27 @@ import com.vseminar.data.model.User;
 import com.vseminar.view.AbstractForm.DeleteHandler;
 import com.vseminar.view.AbstractForm.SaveHandler;
 
+@SpringView(name = UserView.VIEW_NAME)
 @SuppressWarnings("serial")
 public class UserView extends VerticalLayout implements View {
 	
 	public static final String VIEW_NAME = "user";
 	
+	UserForm userForm;
 	UserData userData;
+	UserSession userSession;
 	
 	BeanItemContainer<User> container;
 	
-	UserForm userForm;
+	@Autowired
+	public UserView(UserForm userForm, UserData userData, UserSession userSession) {
+		this.userForm = userForm;
+		this.userData = userData;
+		this.userSession = userSession;
+	}
 	
-	public UserView() {		
-		userData = UserData.getInstance();
-		
+	@PostConstruct
+	public void init() {
 		setHeight(100, Unit.PERCENTAGE); // VertiaclLayout의 Height 사이즈
 		Table table = createTable(); // 테이블 생성
 		
@@ -145,13 +157,14 @@ public class UserView extends VerticalLayout implements View {
 	}
 	
 	private void createForm() {		
-		userForm = new UserForm();
+		// Spring Bean(UserForm)으로 사용 
+		// userForm = new UserForm(); 
 		userForm.setSaveHandler(new SaveHandler<User>() {
 			@Override
 			public void onSave(User entity) {
 				userForm.closePopup();
 				// 로그인한 유저이며 메뉴의 이름을 갱신하기 위해 화면 리로드
-				if(UserSession.getUser().getId()==entity.getId()) {
+				if(userSession.getUser().getId()==entity.getId()) {
 					Page.getCurrent().reload();
 					return;
 				}

@@ -3,6 +3,10 @@ package com.vseminar.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
@@ -16,6 +20,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -35,6 +40,7 @@ import com.vseminar.data.UserSession;
 import com.vseminar.data.model.RoleType;
 import com.vseminar.data.model.Session;
 
+@SpringView(name = SessionView.VIEW_NAME)
 @SuppressWarnings("serial")
 public class SessionView extends VerticalLayout implements View {	
 	
@@ -42,17 +48,23 @@ public class SessionView extends VerticalLayout implements View {
 	
 	SessionData sessionData;
 	UserData userData;
-	
+	UserSession userSession;
+		
 	Grid grid;
 	BeanItemContainer<Session> container;
 	
 	Button newBtn;
 	Button delBtn;
 	
-	public SessionView() {
-		sessionData = SessionData.getInstance();
-		userData = UserData.getInstance();
-		
+	@Autowired
+	public SessionView(SessionData sessionData, UserData userData, UserSession userSession) {
+		this.sessionData = sessionData;
+		this.userData = userData;
+		this.userSession = userSession;
+	}
+	
+	@PostConstruct
+	public void init() {
 		setHeight(100, Unit.PERCENTAGE); // VertiaclLayout의 Height 사이즈		
 		grid = createGrid(); // 그리드 생성
 		
@@ -78,7 +90,7 @@ public class SessionView extends VerticalLayout implements View {
             public void buttonClick(ClickEvent event) {        
             	// containr에 빈 session bean을 추가해 준다.
             	// 이후 Grid 수정시 처럼 row 더블 클릭하고 데이터 입력 후 저장한다.
-            	container.addItemAt(0, new Session(UserSession.getUser().getId()));
+            	container.addItemAt(0, new Session(userSession.getUser().getId()));
         	    grid.scrollToStart(); // 스크롤을 맨 위로 이동 처리
             }
         });
@@ -170,12 +182,12 @@ public class SessionView extends VerticalLayout implements View {
 	private void findBean() {
 		List<Session> sessions = new ArrayList<>();
 		
-		if(UserSession.getUser().getRole()==RoleType.Admin) {
+		if(userSession.getUser().getRole()==RoleType.Admin) {
 		    // 관리자 권한이면 전체 Session 을 보여준다.
 		    sessions.addAll(sessionData.findAll()); 
 		 } else {
 		    // 일반 사용자면 자신이 개설한 세션만 보여준다.
-		    sessions.addAll(sessionData.findByOwner(UserSession.getUser()));
+		    sessions.addAll(sessionData.findByOwner(userSession.getUser()));
 		 }
 		
 		 if(sessions.size()<=0) return;
