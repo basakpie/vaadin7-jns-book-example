@@ -1,7 +1,9 @@
 package com.vseminar.data;
 
 import com.vaadin.server.FontAwesome;
+import com.vseminar.data.model.LevelType;
 import com.vseminar.data.model.RoleType;
+import com.vseminar.data.model.Session;
 import com.vseminar.data.model.User;
 import com.vseminar.menu.Navi;
 import com.vseminar.menu.VSeminarNavigator;
@@ -15,6 +17,7 @@ public final class LoadingDataGenerator {
 	static {
 		createUsers(); // User Mock Data
 		createNavis(); // Navi Mock Data
+		createSessions(); // Session Mcok Data
 	}
 	
 	private static void createUsers() {
@@ -31,5 +34,34 @@ public final class LoadingDataGenerator {
 		VSeminarNavigator.naviMaps.put("about",   new Navi(AboutView.VIEW_NAME,     "About",     AboutView.class,     FontAwesome.INFO,  RoleType.User));
 		VSeminarNavigator.naviMaps.put("user",    new Navi(UserView.VIEW_NAME,      "User",      UserView.class,      FontAwesome.USERS, RoleType.Admin));		
 	}
-
+	
+	private static void createSessions() {
+		UserData userData = UserData.getInstance();
+		
+		Long user1 = userData.findOne(1L).getId();
+		Long user2 = userData.findOne(2L).getId();
+		Long user3 = userData.findOne(3L).getId();
+		
+		SessionData sessionData = SessionData.getInstance();
+		
+		String slideUrl = "http://www.slideshare.net/slideshow/embed_code/key/wcZuA4l1M1Fgwv";
+		String vaadinUrl = "http://demo.vaadin.com/sampler/";
+		
+		sessionData.save(new Session("Vaadin Architecture", LevelType.Junior, slideUrl, "speaker_1", user1, ""));		
+		sessionData.save(new Session("Vaadin Writing a Server-Side Web Application", LevelType.Senior, vaadinUrl, "speaker_1", user1, ""));
+		sessionData.save(new Session("Vaadin User Interface Components", LevelType.Junior, slideUrl, "speaker_2", user2, ""));
+		sessionData.save(new Session("Vaadin Managing Layout", LevelType.Senior, vaadinUrl, "speaker_2", user2, ""));
+		sessionData.save(new Session("Vaadin Designer", LevelType.Junior, slideUrl, "speaker_2", user2, ""));
+		sessionData.save(new Session("Vaadin Themes", LevelType.Junior, vaadinUrl, "speaker_2", user2, ""));
+		sessionData.save(new Session("Vaadin Binding Components to Data", LevelType.Senior, slideUrl, "speaker_1", user1, ""));
+		sessionData.save(new Session("Vaadin Vaadin SQLContainer", LevelType.Senior, vaadinUrl, "speaker_3", user3, ""));
+		sessionData.save(new Session("Vaadin Advanced Web Application Topics", LevelType.Junior, slideUrl, "speaker_1", user1, ""));
+		sessionData.save(new Session("Vaadin Portal Integration", LevelType.Junior, vaadinUrl, "speaker_2", user2, ""));
+		sessionData.save(new Session("Vaadin Client-Side Vaadin Development", LevelType.Junior, slideUrl, "speaker_3", user3, ""));
+		sessionData.save(new Session("Vaadin Client-Side Applications", LevelType.Senior, vaadinUrl, "speaker_3", user2, ""));
+		sessionData.save(new Session("Vaadin Client-Side Widgets", LevelType.Senior, slideUrl, "speaker_3", user3, ""));
+		sessionData.save(new Session("Vaadin Integrating with the Server-Side", LevelType.Junior, vaadinUrl, "speaker_1", user1, ""));
+		sessionData.save(new Session("Vaadin Using Vaadin Add-ons", LevelType.Junior, slideUrl, "speaker_2", user2, ""));		
+	}
+	
 }
