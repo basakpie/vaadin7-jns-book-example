@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.onoffswitch {
+    position: relative; width: 55px;
+    display: inline-block;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+
+.onoffswitch:focus {
+    outline-style:none;
+}
+
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-slider {
+    display: block; overflow: hidden; cursor: pointer;
+    height: 27px; padding: 0; line-height: 27px;
+    border: 2px solid #CCCCCC; border-radius: 27px;
+    background-color: #FFFFFF;
+    transition: background-color 0.3s ease-in;
+}
+.onoffswitch-slider:before {
+    content: "";
+    display: block; width: 27px; margin: 0px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 26px;
+    border: 2px solid #CCCCCC; border-radius: 27px;
+    transition: all 0.3s ease-in 0s; 
+}
+.onoffswitch-slider.on {
+    background-color: #197CDD;
+    border-color: #197CDD;
+}
+
+.onoffswitch-slider.on:before {  
+  border-color: #197CDD;
+  -webkit-transform: translateX(27px);
+  -ms-transform: translateX(27px);
+  transform: translateX(27px);
+}
+</style>
+<script>
+window.onload = function() {
+    var onoffswitch = document.getElementsByClassName("onoffswitch")[0];
+    onoffswitch.addEventListener('click', function (event) {
+        var slider = document.getElementsByClassName("onoffswitch-slider")[0];
+        if(slider.classList.contains("on")) {
+            slider.classList.add("off");   
+            slider.classList.remove("on");   
+        } else {
+            slider.classList.add("on");   
+            slider.classList.remove("off");   
+        }
+    });
+}
+</script>
+</head>
+<body>
+<div class="onoffswitch">
+    <label class="onoffswitch-slider"></label>
+</div>
+</body>
+</html>
